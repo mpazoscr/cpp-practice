@@ -1,3 +1,6 @@
+#ifndef MK_TUPLE_HPP
+#define MK_TUPLE_HPP
+
 namespace mk
 {
   template <typename ...Ts>
@@ -50,3 +53,5 @@ namespace mk
     return getImpl<i, Ts...>::value(tuple);
   }
 }
+
+#endif // MK_TUPLE_HPP

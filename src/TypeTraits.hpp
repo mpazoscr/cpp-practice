@@ -1,3 +1,6 @@
+#ifndef MK_TYPETRAITS_HPP
+#define MK_TYPETRAITS_HPP
+
 namespace mk
 {
   template <typename T, T v>
@@ -30,3 +33,5 @@ namespace mk
   template <typename T>
   struct is_same<T, T> : true_type {};
 }
+
+#endif // MK_TYPETRAITS_HPP
