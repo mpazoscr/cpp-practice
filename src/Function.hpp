@@ -32,7 +32,7 @@ namespace mk
     {
     }
 
-    virtual Ret call(Args... args) = 0;
+    virtual Ret call(Args&&... args) = 0;
   };
 
   template <typename Callable, typename Ret, typename ...Args>
@@ -48,9 +48,9 @@ namespace mk
     {
     }
 
-    Ret call(Args... args) override
+    Ret call(Args&&... args) override
     {
-      return mCallable(args...);
+      return mCallable(std::forward<Args>(args)...);
     }
 
   private:
