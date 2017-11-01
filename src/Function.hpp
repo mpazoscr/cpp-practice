@@ -73,6 +73,9 @@ namespace mk
     function(Callable&& callable) noexcept
     : mImpl{}
     {
+      // Make sure the buffer is enough to contain Callable
+      static_assert(sizeof(PointerBuffer) >= sizeof(FunctionImpl<Callable, Ret, Args...>), "Function storage insufficient");
+
       // Type erasure
       new (getImpl()) FunctionImpl<Callable, Ret, Args...>(std::forward<Callable>(callable));
     }
@@ -101,7 +104,7 @@ namespace mk
   private:
     bool isInitialised()
     {
-      return mImpl != PointerStorage();
+      return mImpl != PointerBuffer();
     }
 
     void checkInitialised()
@@ -113,23 +116,23 @@ namespace mk
       }
     }
     
-    void* rawStorage()
+    void* rawBuffer()
     {
       return static_cast<void*>(mImpl.data());
     }
 
     FunctionImplInterface<Ret, Args...>* getImpl()
     {
-      return static_cast<FunctionImplInterface<Ret, Args...>*>(rawStorage());
+      return static_cast<FunctionImplInterface<Ret, Args...>*>(rawBuffer());
     }
 
   private:
     // Small buffer optimisation (SBO)
-    // This assumes pointers to functions will not occupy more than 4 longs (at least 16 bytes). This is risky
+    // This assumes pointers to functions will not occupy more than 32 chars (at least 32 bytes). Potentially risky
     // as different compilers can require different sizes depending on their implementation of, for instance, virtual
-    // member functions of classes with virtual inheritance.
-    using PointerStorage = std::array<long, 4>;
-    alignas (std::intptr_t) PointerStorage mImpl;
+    // member functions of classes with virtual inheritance. Hence the assertion in the constructor.
+    using PointerBuffer = std::array<char, 32>;
+    alignas (std::intptr_t) PointerBuffer mImpl;
   };
 }
 
